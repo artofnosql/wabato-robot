@@ -10,7 +10,7 @@ This repository contains details about the software and hardware that was integr
 
 A `NEMA 17` stepper motor is used to move the head of the robot. The motor is controlled by using a `A4588` driver unit and an `Arduino Uno`.
 
-> BTW: All the development happens on a Raspberri 400.
+> BTW: All the development happens on a `Raspberry Pi 400`.
 
 A good tutorial about the basic hardware setup can be found here: https://starthardware.org/arduino-a4988-nema17/.
 
