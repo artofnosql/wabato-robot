@@ -8,10 +8,10 @@ This repository contains details about the software and hardware that was integr
 
 ## Move your head!
 
-A `NEMA 17` stepper motor is used to move the head of the robot. The motor is controlled by using a `A4588` driver unit and an `Arduino Uno`. A good tutorial about the basic hardware setup can be found here: https://starthardware.org/arduino-a4988-nema17/.
+A `NEMA 17` stepper motor is used to move the head of the robot. The motor is controlled by using a `A4588` driver unit and an `Arduino Uno`.
+
+> BTW: All the development happens on a Raspberri 400.
+
+A good tutorial about the basic hardware setup can be found here: https://starthardware.org/arduino-a4988-nema17/.
 
 <img src="https://github.com/artofnosql/wabato-robot/blob/main/img/arduino-a4988-nema17.png?raw=true" width="500px"/>
-
-
-
-BTW: All the development happens on a Raspberri 400.
