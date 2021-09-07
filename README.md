@@ -26,7 +26,7 @@ I created a first Arduino [script](./src/ino/stepper/test.ino) for testing this 
 
 The idea is to use three `HC-SR04` ultra-sonic sensors to estimate the position of an observer of the robot. As soon as the potential position is estimated, the robot should turn its head towards the observer.
 
-These sensors are quite easy to use. They have an ultra-sonic sender and recevier built in. All they need is a 5V power supply and you can then trigger a signal by setting the `TRIG` pin to high. This caues that an ultra-sonic wave is sent via the sender. You can then retrieve the reflected wave's signal via the echo pin that is attached to the receiver. The distance of an oserver is measured by takig into account that a wave moves with a specific speed within space. 
+These sensors are quite easy to use. They have an ultra-sonic sender and recevier built in. All they need is a 5V power supply and you can then trigger a signal by setting the `TRIG` pin to high. This caues that an ultra-sonic wave is sent via the sender. You can then retrieve the reflected wave's signal via the `ECHO` pin that is attached to the receiver. The distance of an oserver is measured by takig into account that a wave moves with a specific speed within space. 
 
 A first test [script](https://github.com/artofnosql/wabato-robot/blob/main/src/ino/sonar/test.ino) was written to evaluate the signal of a single `HC-SR04` sensor.
 
