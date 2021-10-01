@@ -13,6 +13,10 @@ const int SPD_VSLOW = 30000;
 const int SPD_SLOW = 10000;
 const int SPD_MED = 5000;
 const int SPD_FAST = 500;
+const char* S_STR[] = {"LEFT", "CENTER_LEFT", "CENTER", "CENTER_RIGHT", "RIGHT"};
+const int S_LEFT=0;
+const int S_CENTER=2;
+const int S_RIGHT=4;
 
 //Ultra-sonic sensors
 const int TRIGGER_PIN_L=8;
@@ -21,7 +25,7 @@ const int TRIGGER_PIN_M=12;
 const int ECHO_PIN_M=10;
 const int TRIGGER_PIN_R=13;
 const int ECHO_PIN_R=11;
-const int MAX_D=100;
+const int MAX_D=120;
 const char* POS_STR[] = {"NONE", "LEFT", "CENTER_LEFT", "CENTER", "CENTER_RIGHT", "RIGHT", "ALL", "UNDEFINED"};
 const char* MOV_STR[] = {"NONE", "LEFT", "RIGHT"};
 const int DIDNT_MOVE=0;
@@ -175,9 +179,9 @@ int current_pos(int d_l, int d_m, int d_r) {
  */
 int detect_movement(){
 
-  //There is a movement if a state transistions from left to right or right to left within a period of 3 seconds
+  //There is a movement if a state transistions from left to right or right to left within a period of n seconds
   
-  //Take 30 samples
+  //Take some samples
   int NUM_SAMPLES = 10;
   
   long samples[NUM_SAMPLES];
@@ -188,9 +192,9 @@ int detect_movement(){
   
   for (int i=0; i < NUM_SAMPLES; i++) {
     long d_l = dist(TRIGGER_PIN_L, ECHO_PIN_L);
-    delay(10);
+    delay(5);
     long d_m = dist(TRIGGER_PIN_M, ECHO_PIN_M);
-    delay(10);
+    delay(5);
     long d_r = dist(TRIGGER_PIN_R, ECHO_PIN_R);
     Serial.println("[ " + String(d_l) + "," + String(d_m) + "," + String(d_r) + " ]");
     
@@ -210,7 +214,7 @@ int detect_movement(){
       }
     }
          
-    delay(80);
+    delay(50);
   }
 
   //Start to scan for the opposite direction
@@ -267,69 +271,51 @@ int detect_pos(){
 }
 
 /**
- * Follow the movement
+ * Use a state machine to follow the movement by taking the current motor position into account 
  */
-int follow_me(int m, int stp_last_dir) {
+int follow_me(int s, int m) {
 
+  //Default value = undefined
+  int s_o = -1;
   int MAX_DEGREE=60;
 
   stepper_enable(true);
-  
-  //LEFT movement from initial position
-  if (m == MOVED_LEFT &&  stp_last_dir == DIR_NONE) {
-    step(degree_to_steps(MAX_DEGREE),DIR_RIGHT,SPD_VSLOW);
-    return DIR_RIGHT;
+
+  if (s == S_LEFT) {
+    if (m == MOVED_LEFT) {s_o = S_LEFT;}
+    if (m == DIDNT_MOVE) {step(degree_to_steps(MAX_DEGREE),DIR_RIGHT,SPD_VSLOW);s_o = S_CENTER;}
+    if (m == MOVED_RIGHT) {step(degree_to_steps(2*MAX_DEGREE),DIR_RIGHT,SPD_VSLOW);s_o = S_RIGHT;}
   }
 
-  //LEFT movement from the right position
-  if (m == MOVED_LEFT &&  stp_last_dir == DIR_LEFT) {
-    step(degree_to_steps(2*MAX_DEGREE),DIR_RIGHT,SPD_VSLOW);
-    return DIR_RIGHT;
+  if (s == S_CENTER) {
+    if (m == MOVED_LEFT) {step(degree_to_steps(MAX_DEGREE),DIR_LEFT,SPD_VSLOW);s_o = S_LEFT;}
+    if (m == DIDNT_MOVE) {s_o = S_CENTER;}
+    if (m == MOVED_RIGHT) {step(degree_to_steps(MAX_DEGREE),DIR_RIGHT,SPD_VSLOW);s_o = S_RIGHT;}
   }
 
-  //CENTER
-  if (m == DIDNT_MOVE && stp_last_dir == DIR_LEFT) {
-    step(degree_to_steps(MAX_DEGREE),DIR_RIGHT,SPD_VSLOW);
-    return DIR_NONE;
-  }
-
-  if (m == DIDNT_MOVE && stp_last_dir == DIR_RIGHT) {
-    step(degree_to_steps(MAX_DEGREE),DIR_LEFT,SPD_VSLOW);
-    return DIR_NONE;
-  }
-
-  //RIGHT movement from initial position
-  if (m == MOVED_RIGHT &&  stp_last_dir == DIR_NONE) {
-    step(degree_to_steps(MAX_DEGREE),DIR_LEFT,SPD_VSLOW);
-    return DIR_LEFT;
-  }
-
-  //RIGHT movement from the left position
-  if (m == MOVED_RIGHT &&  stp_last_dir == DIR_RIGHT) {
-    step(degree_to_steps(2*MAX_DEGREE),DIR_LEFT,SPD_VSLOW);
-    return DIR_LEFT;
+  if (s == S_RIGHT) {
+    if (m == MOVED_LEFT) {step(degree_to_steps(2*MAX_DEGREE),DIR_LEFT,SPD_VSLOW);s_o = S_LEFT;}
+    if (m == DIDNT_MOVE) {step(degree_to_steps(MAX_DEGREE),DIR_LEFT,SPD_VSLOW);s_o = S_CENTER;}
+    if (m == MOVED_RIGHT) {s_o = S_RIGHT;}
   }
 
   stepper_enable(false);
-
-  return DIR_NONE;
+  return s_o;
 }
 
 //Main loop
-int stp_last_dir=DIR_NONE;
+int s_curr=S_CENTER;
 
 void loop() {
     
   //Detect the movement and react
   int m = detect_movement();
   Serial.println(MOV_STR[m]);
-    
-  int stp_curr_dir = follow_me(m, stp_last_dir);
-  stp_last_dir = stp_curr_dir;
+  s_curr = follow_me(s_curr,m);
   
   //Adjust
   //int p = detect_pos();
   //Serial.println(POS_STR[p]);
     
-  delay(500);
+  delay(50);
 }
