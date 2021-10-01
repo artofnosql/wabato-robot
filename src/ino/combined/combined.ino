@@ -1,36 +1,20 @@
 //Stepper motor
-const int MOTOR_PIN_ENABLE = 6;
-const int MOTOR_PIN_STEP = 5;
-const int MOTOR_PIN_DIR = 4;
+const int MOTOR_PIN_ENABLE = 6, MOTOR_PIN_STEP = 5, MOTOR_PIN_DIR = 4;
 const int STP_DGR_360=200;
-const int STP_LOW = 50;
-const int STP_MED = 100;
-const int STP_HIGH = 1000;
-const int DIR_LEFT = 1;
-const int DIR_RIGHT = 0;
-const int DIR_NONE = -1;
-const int SPD_VSLOW = 30000;
-const int SPD_SLOW = 10000;
-const int SPD_MED = 5000;
-const int SPD_FAST = 500;
+const int STP_LOW = 50, STP_MED = 100,STP_HIGH = 1000;
+const int DIR_LEFT = 1, DIR_RIGHT = 0, DIR_NONE = -1;
+const int SPD_VSLOW = 30000, SPD_SLOW = 10000, SPD_MED = 5000, SPD_FAST = 500;
 const char* S_STR[] = {"LEFT", "CENTER_LEFT", "CENTER", "CENTER_RIGHT", "RIGHT"};
-const int S_LEFT=0;
-const int S_CENTER=2;
-const int S_RIGHT=4;
+const int S_LEFT=0, S_CENTER=2, S_RIGHT=4;
 
 //Ultra-sonic sensors
-const int TRIGGER_PIN_L=8;
-const int ECHO_PIN_L=9;
-const int TRIGGER_PIN_M=12;
-const int ECHO_PIN_M=10;
-const int TRIGGER_PIN_R=13;
-const int ECHO_PIN_R=11;
-const int MAX_D=120;
+const int TRIGGER_PIN_L=8, ECHO_PIN_L=9;
+const int TRIGGER_PIN_M=12, ECHO_PIN_M=10;
+const int TRIGGER_PIN_R=13, ECHO_PIN_R=11;
+const int MAX_DIST=120;
 const char* POS_STR[] = {"NONE", "LEFT", "CENTER_LEFT", "CENTER", "CENTER_RIGHT", "RIGHT", "ALL", "UNDEFINED"};
 const char* MOV_STR[] = {"NONE", "LEFT", "RIGHT"};
-const int DIDNT_MOVE=0;
-const int MOVED_LEFT=1;
-const int MOVED_RIGHT=2;
+const int DIDNT_MOVE=0, MOVED_LEFT=1, MOVED_RIGHT=2;
 
 
 //Init the motor
@@ -115,14 +99,12 @@ long dist(int trig_id, int echo_id) {
 /**
  * I see you!
  * 
- * Check if a specific sensor sees an observer by      if ()} {
-      }
-
- * checking if the distance is lower then MAX_D
+ * Check if a specific sensor sees an observer by checking 
+ * if the distance is lower then MAX_D
  */
 boolean seen(long dist) {
   
-  if ((dist > 0) && (dist < MAX_D)) {
+  if ((dist > 0) && (dist < MAX_DIST)) {
     return true;
   }
 
